@@ -3,6 +3,7 @@ import Router from "next/router"
 import { parseCookies, setCookie } from "nookies"
 import { Eye, EyeSlash } from "phosphor-react"
 import React, { useState } from "react"
+import { ErrorLogin } from "../components/ErrorLogin"
 import api from "../services/api"
 
 function Login() {
@@ -10,14 +11,15 @@ function Login() {
     const [name, setUser] = useState('') 
     const [password, setPassword] = useState('') 
     const [showPassword, setShowPassword] = useState('password') 
+    const [errorLogin, seTerrorLogin] = useState('') 
 
     const login = async (e) => {
         e.preventDefault()
         if(password.length < 3 || password.length > 18){
-            return alert('senha precisa ser > 3 e < 18')
+            return seTerrorLogin('Senha precisa ter entre 3 a 18 caracteres')
         }
         if(name.length < 3 || name.length > 18){
-            return alert('name precisa ser > 3 e < 18')
+            return seTerrorLogin('Name precisa ter entre 3 a 18 caracteres')
         }
         
         try{
@@ -28,7 +30,7 @@ function Login() {
 
             Router.push('/room')
         }catch(err){
-            alert('nome ou senha incorretos!')
+            seTerrorLogin('Usesrname ou Senha incorretos.')
         }
     }
 
@@ -37,6 +39,9 @@ function Login() {
             <div className="bg-blue-600 w-screen h-screen opacity-60 absolute top-0 left-0 z-30"></div>
             <div className="w-96 bg-white opacity-1 z-50 absolute p-5 rounded-lg shadow-md shadow-slate-600">
                     <h1 className="text-center text-3xl mb-7 mt-2">Welcome chatgram</h1>
+                    {
+                        errorLogin && <ErrorLogin mensagem={errorLogin}/>
+                    }
                     <form className="flex flex-col" onSubmit={(e) => login(e)}>
                         <input 
                             type="text" 
