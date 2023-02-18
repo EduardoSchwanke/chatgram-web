@@ -1,27 +1,40 @@
 import Link from "next/link"
-import { parseCookies } from "nookies"
+import Router from "next/router"
+import { parseCookies, setCookie } from "nookies"
 import { Eye, EyeSlash } from "phosphor-react"
 import { useState } from "react"
+import { ErrorLogin } from "../components/ErrorLogin"
+import api from "../services/api"
 
 function Signup() {
 
     const [username, setUser] = useState('') 
     const [userUniqueName, setUserUniqueName] = useState('') 
     const [password, setPassword] = useState('') 
-    const [showPassword, setShowPassword] = useState('password') 
+    const [showPassword, setShowPassword] = useState('password')
+    const [errorLogin, seTerrorLogin] = useState('')  
 
     const signup = async (e) => {
         e.preventDefault()
         if(password.length < 3 || password.length > 18){
-            return alert('senha precisa ter entre 3 a 18 caracteres')
+            return seTerrorLogin('Senha precisa ter entre 3 a 18 caracteres')
         }
         if(username.length < 3 || username.length > 18){
-            return alert('name precisa ser > 3 e < 18')
+            return seTerrorLogin('Name precisa ter entre 3 a 18 caracteres')
         }
         if(userUniqueName.length < 3 || userUniqueName.length > 18){
-            return alert('arroba precisa ser > 3 e < 18')
+            return seTerrorLogin('Arroba precisa ter entre 3 a 18 caracteres')
         }
-        console.log(username, userUniqueName, password)
+        try{
+            const user = await api.post('signup', {username, userUniqueName, password})
+            setCookie(undefined, 'auth.token', user.data._id, {
+                maxAge: 60 * 60 * 24 // 24 hours
+            })
+
+            Router.push('/room')
+        }catch(err){
+            seTerrorLogin('Esse Arroba já existe.')
+        }
     }
 
     return (
@@ -30,6 +43,11 @@ function Signup() {
             <div className="w-96 bg-white opacity-1 z-50 absolute p-5 rounded-lg shadow-md shadow-slate-600">
                     <div>
                         <h1 className="text-center text-3xl mb-7 mt-2">Crie sua conta</h1>
+                        {
+                            
+                            errorLogin && <ErrorLogin mensagem={errorLogin}/>
+                            
+                        }
                         <form className="flex flex-col" onSubmit={(e) => signup(e)}>
                             <input 
                                 type="text" 
