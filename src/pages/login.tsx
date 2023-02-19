@@ -55,7 +55,7 @@ function Login() {
                                 name="" 
                                 id="" 
                                 placeholder="Password"
-                                className="placeholder:text-slate-700 w-full bg-blue-200 rounded-md px-3 py-2 mb-5 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"    
+                                className="placeholder:text-slate-700 w-full bg-blue-200 rounded-md select-none px-3 py-2 mb-5 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"    
                                 onChange={(e) => setPassword(e.target.value)}
                             />
                             
