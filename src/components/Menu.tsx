@@ -1,6 +1,6 @@
 import Router from "next/router"
 import { destroyCookie, parseCookies } from "nookies"
-import { CaretDown } from "phosphor-react"
+import { CaretDown, CaretUp } from "phosphor-react"
 import { useEffect, useState } from "react"
 import api from "../services/api"
 
@@ -26,14 +26,22 @@ export function Menu({ openMenu }: OpenMenuProps) {
     const [deleteUSer, setDeleteUser] = useState(false)
     const [deletar, setDeletar] = useState('')
 
+    const [username, setUser] = useState('') 
+    const [userUniqueName, setUserUniqueName] = useState('') 
+    const [password, setPassword] = useState('') 
+
     useEffect(() => {
+
         async function getUSer() {
             const user = await api.get(`/${id}`)
             SetUserNow(user.data)
+            setUser(user.data.username)
+            setUserUniqueName(user.data.userUniqueName)
+            setPassword(user.data.password)
         }
 
         getUSer()
-        
+       
     }, [])
 
     async function deleteSubmit(e) {
@@ -46,6 +54,12 @@ export function Menu({ openMenu }: OpenMenuProps) {
         await api.delete(`/${id}`)
         destroyCookie(undefined, 'auth.token')
         Router.push('/')
+    }
+
+    async function updateSubmit(e) {
+        e.preventDefault()
+        alert('Usruario atualizado com sucesso!')
+        await api.put(`/${id}`, { username, userUniqueName, password })
     }
 
     return (
@@ -61,13 +75,39 @@ export function Menu({ openMenu }: OpenMenuProps) {
                         onClick={() => setEditUser(!editUSer)}
                     >
                         <p>Editar Usuário</p>
-                        <CaretDown size={22} />
+
+                        {
+                            !editUSer ? <CaretDown size={22} /> : <CaretUp size={22} />
+                        }
+                        
                     </div>
-                    <div className={`w-full h-full bg-white py-3 h-14 ${!editUSer ? 'hidden' : 'flex'}`}>
-                        <form className="w-full flex flex-col items-center">
-                            <input type="text" placeholder="Username" className="placeholder:text-slate-700 w-3/5 bg-blue-200 rounded-md px-3 py-2 mb-5 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"/>
-                            <input type="text" placeholder="@Arroba" className="placeholder:text-slate-700 w-3/5 bg-blue-200 rounded-md px-3 py-2 mb-5 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"/>
-                            <input type="text" placeholder="Password" className="placeholder:text-slate-700 w-3/5 bg-blue-200 rounded-md px-3 py-2 mb-5 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"/>
+                    <div className={`w-full h-full bg-white py-3 ${!editUSer ? 'hidden' : 'flex'}`}>
+                        <form className="w-full h-full flex flex-col items-center" onSubmit={(e) => updateSubmit(e)}>
+                            <input 
+                                type="text" 
+                                placeholder="Username" 
+                                defaultValue={userNow?.username} 
+                                className="placeholder:text-slate-700 w-3/5 bg-blue-200 rounded-md px-3 py-2 mb-5 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
+                                onChange={(e) => setUser(e.target.value)}
+                            />
+
+                            <div className="w-3/5 relative flex items-center justify-center">
+                                <input 
+                                    type="text" 
+                                    placeholder="Arroba" 
+                                    defaultValue={userNow?.userUniqueName} 
+                                    className="placeholder:text-slate-700 w-full pl-6 bg-blue-200 rounded-md px-3 py-2 mb-5 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
+                                    onChange={(e) => setUserUniqueName(e.target.value)}    
+                                />
+                                <p className="absolute top-2 left-2">@</p>
+                            </div>
+                            <input 
+                                type="text" 
+                                placeholder="Password" 
+                                defaultValue={userNow?.password} 
+                                className="placeholder:text-slate-700 w-3/5 bg-blue-200 rounded-md px-3 py-2 mb-5 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
+                                onChange={(e) => setPassword(e.target.value)}    
+                            />
                             <button type="submit" className="bg-green-700 w-3/5 text-white py-2 rounded-lg hover:bg-green-600 transition-colors">Atualizar</button>
                         </form>
                     </div>
@@ -79,9 +119,11 @@ export function Menu({ openMenu }: OpenMenuProps) {
                         onClick={() => setDeleteUser(!deleteUSer)}
                     >
                         <p>Deletar Usuário</p>
-                        <CaretDown size={22} />
+                        {
+                            !deleteUSer ? <CaretDown size={22} /> : <CaretUp size={22} />
+                        }
                     </div>
-                    <div className={`w-full h-full bg-white py-3 h-14 ${!deleteUSer ? 'hidden' : 'flex'}`}>
+                    <div className={`w-full h-full bg-white py-3 ${!deleteUSer ? 'hidden' : 'flex'}`}>
                         <form className="w-full flex flex-col items-center" onSubmit={(e) => deleteSubmit(e)}>
                             <p className="w-3/5 text-sm text-zinc-600 mb-2">Para deletar escreva na caixa abaixo "Deletar"</p>
                             <input 
