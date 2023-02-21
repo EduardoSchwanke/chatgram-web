@@ -58,6 +58,15 @@ export function Menu({ openMenu }: OpenMenuProps) {
 
     async function updateSubmit(e) {
         e.preventDefault()
+        if(password.length < 3 || password.length > 18){
+            return alert('error')
+        }
+        if(username.length < 3 || username.length > 18){
+            return alert('error')
+        }
+        if(userUniqueName.length < 3 || userUniqueName.length > 18){
+            return alert('error')
+        }
         alert('Usruario atualizado com sucesso!')
         await api.put(`/${id}`, { username, userUniqueName, password })
     }
