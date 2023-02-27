@@ -5,7 +5,7 @@ import { SideBar } from "../components/SideBar"
 function Room() {
     return (
         <div className="flex">
-            <SideBar />
+            <SideBar/>
             <BoxMessage />
         </div>
     )

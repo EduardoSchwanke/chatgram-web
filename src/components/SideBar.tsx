@@ -1,10 +1,26 @@
 import { List, MagnifyingGlass, X } from "phosphor-react";
-import { useState } from "react";
+import {  useContext, useEffect, useState } from "react";
+import { ChatContext } from "../context/ChatContext";
+import api from "../services/api";
 import { Menu } from "./Menu";
 
 export function SideBar() {
 
-    const [menuOpen, setMenuOpen] = useState(false) 
+    const [menuOpen, setMenuOpen] = useState(false)
+    const { userNow } = useContext(ChatContext)
+
+    const [conversations, setConversations] = useState([])
+    
+
+    useEffect(() => {
+        async function getConversations() {
+            const user = await api.post(`/chatConversation`, {one: userNow?.userUniqueName})
+            setConversations(user.data)
+            console.log(user.data)
+        }
+
+        getConversations()
+    }, [userNow])
 
     return (
         <div className="w-1/4 h-screen flex flex-col">
@@ -43,48 +59,30 @@ export function SideBar() {
 
             <div>
 
-                <div className="flex justify-between px-4 py-5 cursor-pointer hover:bg-slate-100 transition-colors">
-                    <div className="flex gap-3">
-                        <div className="bg-slate-300 w-11 h-11 rounded-full"></div>
-                        <div className="flex flex-col items-start">
-                            <p className="font-bold font-sans">Jõao pereira</p>
-                            <p className="text-sm text-slate-500">last message here</p>
-                        </div>
-                    </div>
-                    <div className="flex flex-col items-end gap-3">
-                        <p className="text-xs text-slate-500">19:43</p>
-                        <div className="w-4 h-4 bg-green-400 rounded-full flex items-center justify-center text-white text-ms">!</div>
-                    </div>
-                </div>
-
-
-                <div className="flex justify-between px-4 py-5 cursor-pointer hover:bg-slate-100 transition-colors">
-                    <div className="flex gap-3">
-                        <div className="bg-slate-300 w-11 h-11 rounded-full"></div>
-                        <div className="flex flex-col items-start">
-                            <p className="font-bold">Lucas Gabriel</p>
-                            <p className="text-sm text-slate-500">last message here</p>
-                        </div>
-                    </div>
-                    <div className="flex flex-col items-end gap-3">
-                        <p className="text-xs text-slate-500">19:43</p>
-                        <div className="w-4 h-4 bg-green-400 rounded-full flex items-center justify-center text-white text-ms">!</div>
-                    </div>
-                </div>
-
-                <div className="flex justify-between px-4 py-5 cursor-pointer hover:bg-slate-100 transition-colors">
-                    <div className="flex gap-3">
-                        <div className="bg-slate-300 w-11 h-11 rounded-full"></div>
-                        <div className="flex flex-col items-start">
-                            <p className="font-bold">Samuel Sousa</p>
-                            <p className="text-sm text-slate-500">last message here</p>
-                        </div>
-                    </div>
-                    <div className="flex flex-col items-end gap-3">
-                        <p className="text-xs text-slate-500">19:43</p>
+                
                         
-                    </div>
-                </div>
+                    {
+                        conversations?.map((item, index) => {
+                            console.log(item)
+                            return (
+                                <div key={index} className="flex justify-between px-4 py-5 cursor-pointer hover:bg-slate-100 transition-colors">
+                                    <div className="flex gap-3">
+                                        <div className="bg-slate-300 w-11 h-11 rounded-full bg-[url('/imgDefault.png')] bg-no-repeat bg-cover"></div>
+                                        <div className="flex flex-col items-start">
+                                            <p className="font-bold font-sans">{(item.userOne === userNow?.userUniqueName) ? item.UserTwo : item.userOne }</p>
+                                            <p className="text-sm text-slate-500">{item.chatRoom[item.chatRoom.length -1][1]}</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col items-end gap-3">
+                                        <p className="text-xs text-slate-500">19:43</p>
+                                        <div className="w-4 h-4 bg-green-400 rounded-full flex items-center justify-center text-white text-ms">!</div>
+                                    </div>
+                                </div>
+                            )
+                        })
+                    }
+                        
+                    
 
             </div>
         </div>

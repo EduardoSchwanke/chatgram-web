@@ -1,26 +1,17 @@
 import Router from "next/router"
-import { destroyCookie, parseCookies } from "nookies"
+import { destroyCookie } from "nookies"
 import { CaretDown, CaretUp } from "phosphor-react"
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import api from "../services/api"
+import { ChatContext } from '../context/ChatContext'
 
 interface OpenMenuProps {
     openMenu: boolean
 }
 
-interface UserProps {
-    password: string,
-    userUniqueName: string,
-    username: string,
-    __v: number,
-    _id: string
-}
-
-
 export function Menu({ openMenu }: OpenMenuProps) {
 
-    const [userNow, SetUserNow] = useState<UserProps>()
-    const {['auth.token'] : id} = parseCookies()
+    const { userNow, id } = useContext(ChatContext)
     
     const [editUSer, setEditUser] = useState(false)
     const [deleteUSer, setDeleteUser] = useState(false)
@@ -28,13 +19,12 @@ export function Menu({ openMenu }: OpenMenuProps) {
 
     const [username, setUser] = useState('') 
     const [userUniqueName, setUserUniqueName] = useState('') 
-    const [password, setPassword] = useState('') 
+    const [password, setPassword] = useState('')
 
     useEffect(() => {
 
         async function getUSer() {
             const user = await api.get(`/${id}`)
-            SetUserNow(user.data)
             setUser(user.data.username)
             setUserUniqueName(user.data.userUniqueName)
             setPassword(user.data.password)
