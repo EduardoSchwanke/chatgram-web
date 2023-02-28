@@ -7,7 +7,7 @@ import { Menu } from "./Menu";
 export function SideBar() {
 
     const [menuOpen, setMenuOpen] = useState(false)
-    const { userNow } = useContext(ChatContext)
+    const { userNow, getConversation } = useContext(ChatContext)
 
     const [conversations, setConversations] = useState([])
     
@@ -16,7 +16,6 @@ export function SideBar() {
         async function getConversations() {
             const user = await api.post(`/chatConversation`, {one: userNow?.userUniqueName})
             setConversations(user.data)
-            console.log(user.data)
         }
 
         getConversations()
@@ -63,9 +62,14 @@ export function SideBar() {
                         
                     {
                         conversations?.map((item, index) => {
-                            console.log(item)
                             return (
-                                <div key={index} className="flex justify-between px-4 py-5 cursor-pointer hover:bg-slate-100 transition-colors">
+                                <div 
+                                    key={index} 
+                                    className="flex justify-between px-4 py-5 cursor-pointer hover:bg-slate-100 transition-colors"
+                                    onClick={() => {
+                                        getConversation(item.chatRoom)
+                                    }}    
+                                >
                                     <div className="flex gap-3">
                                         <div className="bg-slate-300 w-11 h-11 rounded-full bg-[url('/imgDefault.png')] bg-no-repeat bg-cover"></div>
                                         <div className="flex flex-col items-start">

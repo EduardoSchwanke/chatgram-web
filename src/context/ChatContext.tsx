@@ -16,6 +16,11 @@ export function ChatContextProvider({ children }) {
 
     const {['auth.token'] : id} = parseCookies()
     const [userNow, SetUserNow] = useState<UserProps>()
+    const [conversation, SetConversation] = useState()
+
+    function getConversation(props) {
+        SetConversation(props)
+    }
 
     useEffect(() => {
         async function getUserById() {
@@ -28,7 +33,7 @@ export function ChatContextProvider({ children }) {
     console.log(id)
 
     return (
-        <ChatContext.Provider value={{userNow, id}}>
+        <ChatContext.Provider value={{userNow, id, getConversation, conversation}}>
             {children}
         </ChatContext.Provider>
     )
