@@ -29,8 +29,7 @@ export function ChatContextProvider({ children }) {
         }
 
         getUserById()
-    }, [id])
-    console.log(id)
+    }, [id, conversation])
 
     return (
         <ChatContext.Provider value={{userNow, id, getConversation, conversation}}>

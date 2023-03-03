@@ -4,23 +4,40 @@ import { ChatContext } from "../context/ChatContext";
 import api from "../services/api";
 import { Menu } from "./Menu";
 
+
+interface ConversationProps {
+    map(arg0: (item: any, index: any) => JSX.Element): import("react").ReactNode;
+    UserTwo: string
+    chatRoom: []
+    userOne: string
+}
+
 export function SideBar() {
 
     const [menuOpen, setMenuOpen] = useState(false)
-    const { userNow, getConversation } = useContext(ChatContext)
+    const { userNow, getConversation, id } = useContext(ChatContext)
 
-    const [conversations, setConversations] = useState([])
-    
-
+    const [conversations, setConversations] = useState<ConversationProps>()
+    const [user, setUser] = useState([])
     useEffect(() => {
         async function getConversations() {
-            const user = await api.post(`/chatConversation`, {one: userNow?.userUniqueName})
-            setConversations(user.data)
+            const user = await api.post(`/chatConversation`, {one: id})
+            user.data.map(async (item, index) => {
+                if(item.userOne !== id){
+                    const a = await api.get(`/${item.userOne}`)
+                    setUser(user => [...user, a?.data.username])
+                    setConversations(user.data)
+                }else{
+                    const a = await api.get(`/${item.UserTwo}`)
+                    setUser(user => [...user, a?.data.username])
+                    setConversations(user.data)
+                }
+            })
         }
 
         getConversations()
-    }, [userNow])
-
+    }, [])
+    
     return (
         <div className="w-1/4 h-screen flex flex-col">
             <div className="flex gap-5 px-6 py-4 items-center relative">
@@ -73,7 +90,7 @@ export function SideBar() {
                                     <div className="flex gap-3">
                                         <div className="bg-slate-300 w-11 h-11 rounded-full bg-[url('/imgDefault.png')] bg-no-repeat bg-cover"></div>
                                         <div className="flex flex-col items-start">
-                                            <p className="font-bold font-sans">{(item.userOne === userNow?.userUniqueName) ? item.UserTwo : item.userOne }</p>
+                                            <p className="font-bold font-sans">{ user[index] }</p>
                                             <p className="text-sm text-slate-500">{item.chatRoom[item.chatRoom.length -1][1]}</p>
                                         </div>
                                     </div>
@@ -86,7 +103,7 @@ export function SideBar() {
                         })
                     }
                         
-                    
+                 
 
             </div>
         </div>
