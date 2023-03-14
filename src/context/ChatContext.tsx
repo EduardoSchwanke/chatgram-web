@@ -15,12 +15,8 @@ interface UserProps {
 export function ChatContextProvider({ children }) {
 
     const {['auth.token'] : id} = parseCookies()
-    const [userNow, SetUserNow] = useState<UserProps>()
-    const [conversation, SetConversation] = useState()
-
-    function getConversation(props) {
-        SetConversation(props)
-    }
+    const [userNow, SetUserNow] = useState()
+    const [conversations, setConversations] = useState<UserProps | undefined>()
 
     useEffect(() => {
         async function getUserById() {
@@ -29,11 +25,20 @@ export function ChatContextProvider({ children }) {
         }
 
         getUserById()
-    }, [id, conversation])
+    }, [id])
 
+    useEffect(() => {
+        async function getConversations() {
+            const conversations = await api.post('/chatConversationAll', {userOne:[id, userNow?.userUniqueName]})
+            setConversations(conversations.data)
+        }
+
+        getConversations()
+    }, [userNow])
+    
     return (
-        <ChatContext.Provider value={{userNow, id, getConversation, conversation}}>
+        <ChatContext.Provider value={{id, userNow, conversations}}>
             {children}
         </ChatContext.Provider>
-    )
+    ) 
 }

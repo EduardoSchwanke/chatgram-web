@@ -18,15 +18,13 @@ export function Menu({ openMenu }: OpenMenuProps) {
     const [deletar, setDeletar] = useState('')
 
     const [username, setUser] = useState('') 
-    const [userUniqueName, setUserUniqueName] = useState('') 
     const [password, setPassword] = useState('')
 
     useEffect(() => {
 
-        async function getUSer() {
+        async function getUSer() { 
             const user = await api.get(`/${id}`)
             setUser(user.data.username)
-            setUserUniqueName(user.data.userUniqueName)
             setPassword(user.data.password)
         }
 
@@ -54,15 +52,13 @@ export function Menu({ openMenu }: OpenMenuProps) {
         if(username.length < 3 || username.length > 18){
             return alert('error')
         }
-        if(userUniqueName.length < 3 || userUniqueName.length > 18){
-            return alert('error')
-        }
+
         alert('Usruario atualizado com sucesso!')
-        await api.put(`/${id}`, { username, userUniqueName, password })
+        await api.put(`/${id}`, { username, password })
     }
 
     return (
-        <div className={`w-1/4 h-screen flex flex-col justify-between bg-white absolute top-0 z-20 ${!openMenu ? '-left-1/4' : 'left-0'} overflow-y-auto`}>
+        <div className={`w-[20%] h-screen flex flex-col justify-between bg-white absolute top-0 z-20 ${!openMenu ? '-left-1/4' : 'left-0'} overflow-y-auto`}>
             <div className="w-full flex flex-col items-center mt-12">
                 <div className="w-40 h-40 rounded-full bg-[url('/imgDefault.png')] bg-no-repeat bg-cover mb-2"></div>
                 <p className="text-2xl">{userNow?.username}</p>
@@ -90,16 +86,6 @@ export function Menu({ openMenu }: OpenMenuProps) {
                                 onChange={(e) => setUser(e.target.value)}
                             />
 
-                            <div className="w-3/5 relative flex items-center justify-center">
-                                <input 
-                                    type="text" 
-                                    placeholder="Arroba" 
-                                    defaultValue={userNow?.userUniqueName} 
-                                    className="placeholder:text-slate-700 w-full pl-6 bg-blue-200 rounded-md px-3 py-2 mb-5 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
-                                    onChange={(e) => setUserUniqueName(e.target.value)}    
-                                />
-                                <p className="absolute top-2 left-2">@</p>
-                            </div>
                             <input 
                                 type="text" 
                                 placeholder="Password" 
