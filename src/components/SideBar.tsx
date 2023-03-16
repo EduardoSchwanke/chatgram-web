@@ -9,6 +9,9 @@ export function SideBar() {
 
     const [menuOpen, setMenuOpen] = useState(false)
     const { id, conversations } = useContext(ChatContext)
+    const [users, setUsers] = useState([])
+
+    console.log(users)
 
     return (
         <div className="w-1/4 h-screen flex flex-col bg-white">
@@ -48,6 +51,30 @@ export function SideBar() {
             <div>
                 {
                     conversations?.map((item, index) => {
+                        async function name() {
+                            if(users.length >= conversations.length){
+                                return
+                            }
+                            if(item.userTwo != id){
+                                if(users.length >= conversations.length){
+                                    return
+                                }
+                                const user = await api.get(`/${item.userTwo}`)
+                                setUsers(users => [...users, user.data.username])
+                                return
+                            }
+                            if(item.userOne != id){
+                                if(users.length >= conversations.length){
+                                    return
+                                }
+                                const user = await api.get(`/${item.userOne}`)
+                                setUsers(users => [...users, user.data.username])
+                                return
+                            } 
+                            return
+                        }
+
+                        name()
                         return (
                             <div 
                                 key={index}
@@ -58,12 +85,12 @@ export function SideBar() {
                                     <div className="flex flex-col items-start">
                                         <p className="font-bold font-sans">
                                             {
-                                                (id !== item.userOne[0]) ? item.userOne[1] : item.userTwo[1]
+                                                users[index]
                                             }
                                         </p>
                                         <p className="text-sm text-slate-500">
                                             {
-                                                item.chatRoom[item.chatRoom.length-1][1]
+                                                item.chatRoom[item.chatRoom.length - 1][1]
                                             }
                                         </p>
                                     </div>
